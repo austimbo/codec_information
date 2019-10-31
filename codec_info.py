@@ -14,7 +14,8 @@ xml_get="/getxml?location="
 #Codec_URL="http://"+Device_IP
 network_xml_suffix="/status/network"
 system_unit_suffix="/status/SystemUnit"
-headers= {'content-type' : 'text/xml'}
+user_interface_suffix="/status/UserInterface"
+content_type= {'content-type' : 'text/xml'}
 codec_file="codecs.txt"
 codec_info_file="codec_info.csv"
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
   #Open an output file
  with open("codec_info.csv",'w+') as codec_info_f:
     #Write the Header row to the file. Thi is useful for Microspft Excel
-    codec_info_f.write("IPv4_address, mac_address, serial_number, product_id\n")
+    codec_info_f.write("System Name,IPv4_address, mac_address, serial_number, product_id\n")
     with open(codec_file) as codec_file_f:
         #for Codec_IP in codec_file_f:
         for Codec_csv in codec_file_f:
@@ -75,8 +76,13 @@ if __name__ == "__main__":
                 product_id=extract_value_from_xml(response,"/ProductId")
                  #Retreive the product ID from the XL Object
                 print('Product ID is: {}'.format(product_id.text))
+            #Retreive the system name from the device
+            response = get_from_codec(Codec_URL + xml_get + user_interface_suffix, userid, password)
+            if response:
+                system_name=extract_value_from_xml(response,"/UserInterface/ContactInfo/Name")
+                print('System Name is: {}'.format(system_name.text))
                 #Write the output to the CSV file
-                codec_info_f.write("%s,%s,%s,%s\n" % (IPv4_address.text,mac_address.text,serial_number.text,product_id.text))
+                codec_info_f.write("%s,%s,%s,%s,%s\n" % (system_name.text,IPv4_address.text,mac_address.text,serial_number.text,product_id.text))
             else:
                 #Write an Error message to the CSV file
                 codec_info_f.write("%s, Error retreiving information,," % (Device_IP))
