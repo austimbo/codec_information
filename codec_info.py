@@ -30,7 +30,7 @@ codec_info_file="codec_info.csv"
 def get_from_codec(URL,userid, password):
     auth = HTTPBasicAuth(userid, password)
     try:
-        response = requests.get(URL, timeout=(2, 5), verify=False, headers=headers, auth=auth)
+        response = requests.get(URL, timeout=(5, 5), verify=False, headers=headers, auth=auth)
         print('Status Code: {0} for {1}'.format(response.status_code,URL))
         return response
 
@@ -46,12 +46,16 @@ def extract_value_from_xml(xml_text,xml_path):
     xml_text_value = response_xml_obj.find('./'+xml_path)
     return xml_text_value
 
+def request_comms_error_report(message):
+    codec_info_f.write("%s, Error retreiving information,%s," % (Device_IP,message))
+
+
 # Main - Execute the main routing
 if __name__ == "__main__":
   #Open an output file
  with open("codec_info.csv",'w+') as codec_info_f:
     #Write the Header row to the file. Thi is useful for Microspft Excel
-    codec_info_f.write("System Name,IPv4_address, mac_address, serial_number, product_id\n")
+    codec_info_f.write("System Name, IPv4_address, mac_address, serial_number, product_id\n")
     with open(codec_file) as codec_file_f:
         #for Codec_IP in codec_file_f:
         for Codec_csv in codec_file_f:
@@ -67,6 +71,9 @@ if __name__ == "__main__":
                 #Retreive the IPV4 Network address
                 IPv4_address=extract_value_from_xml(response,"/Network/IPv4/Address")
                 print('IPv4 address is: {}'.format(IPv4_address.text))
+            else:
+                request_comms_error_report('Network Stuff failed')
+                continue
             #Retreive the System unit XML group from the device
             response=get_from_codec(Codec_URL+xml_get+system_unit_suffix,userid, password)
             if response:
@@ -76,6 +83,9 @@ if __name__ == "__main__":
                 product_id=extract_value_from_xml(response,"/ProductId")
                  #Retreive the product ID from the XL Object
                 print('Product ID is: {}'.format(product_id.text))
+            else:
+                request_comms_error_report('Serial Number Stuff failed')
+                continue
             #Retreive the system name from the device
             response = get_from_codec(Codec_URL + xml_get + user_interface_suffix, userid, password)
             if response:
@@ -83,9 +93,10 @@ if __name__ == "__main__":
                 print('System Name is: {}'.format(system_name.text))
                 #Write the output to the CSV file
                 codec_info_f.write("%s,%s,%s,%s,%s\n" % (system_name.text,IPv4_address.text,mac_address.text,serial_number.text,product_id.text))
+                requests_comms_error = False
             else:
-                #Write an Error message to the CSV file
-                codec_info_f.write("%s, Error retreiving information,," % (Device_IP))
+                request_comms_error_report('User Interface Stuff failed')
+                continue
 
 
 
