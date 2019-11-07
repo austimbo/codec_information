@@ -1,3 +1,4 @@
-System Name,IPv4_address, mac_address, serial_number, product_id
+System Name, IPv4_address, mac_address, serial_number, product_id
 Crappy SX10,192.168.0.42,E4:C7:22:65:D7:40,FTT181402AM,Cisco TelePresence SX10
-192.168.0.72, Error retreiving information,,
+error, Error retreiving information,192.168.0.72,Network Stuff failed
+error, Error retreiving information,192.168.0.92,Network Stuff failed

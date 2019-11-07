@@ -47,13 +47,13 @@ def extract_value_from_xml(xml_text,xml_path):
     return xml_text_value
 
 def request_comms_error_report(message):
-    codec_info_f.write("%s, Error retreiving information,%s," % (Device_IP,message))
-    MainSwTable.add_row([format(Device_IP), format(message),format('Error'),format('Error'),format('Error')])
+    codec_info_f.write("error, Error retreiving information,%s,%s\n" % (Device_IP,message))
+    MainSwTable.add_row([format('error'), format(message),format(Device_IP),format('Error'),format('Error')])
 
 
 # Main - Execute the main routing
 if __name__ == "__main__":
- print('Version2.0- Last Change Daniele, pretty print table')
+ print('Version2.1a - Last Change Daniele + (a) EOL CR fix')
   #Define Field names in the Pretty table MainSwTable
  MainSwTable.field_names = ['SYSTEM NAME', 'MAC ADDRESS', 'IP ADDRESS', 'SERIAL NUMBER', 'PRODUCT ID']
   # Open an output file
